@@ -17,6 +17,7 @@ int main()
   while(1)
   {
     char file_name[VALUE_MAX];
+    char potenFile[VALUE_MAX];
     int value;
     char buffer[BUFFER_LENGTH];
     char intBuffer[INT_BUFFER_LENGTH];
@@ -24,6 +25,7 @@ int main()
     
     // Copiar o path para file_name
     sprintf(file_name, "/sys/class/gpio/gpio67/value");
+    sprintf(potenFile, "/sys/class/iio/");
     // Abrindo o arquivo e verificando se houve erro
     fd = open(file_name, O_RDONLY);
 
@@ -31,7 +33,6 @@ int main()
       printf("O arquivo %s não abriu\n", file_name);
       return(-1);
     }
-
 
     // Lendo o conteúdo do arquivo para o buffer
     if (read(fd, buffer, BUFFER_LENGTH) == -1) {

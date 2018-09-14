@@ -17,13 +17,14 @@ int main()
   while(1)
   {
     char file_name[VALUE_MAX];
+    char potenFile[VALUE_MAX];
     int value;
     char buffer[BUFFER_LENGTH];
     char intBuffer[INT_BUFFER_LENGTH];
     int fd;
     
     // Copiar o path para file_name
-    sprintf(file_name, "/sys/bus/iio/devices/iio:device0/in_voltage1_raw");
+    sprintf(file_name, "/sys/bus/iio/devices/iio:device0/in_voltage0_raw");
     // Abrindo o arquivo e verificando se houve erro
     fd = open(file_name, O_RDONLY);
 
@@ -31,7 +32,6 @@ int main()
       printf("O arquivo %s não abriu\n", file_name);
       return(-1);
     }
-
 
     // Lendo o conteúdo do arquivo para o buffer
     if (read(fd, buffer, BUFFER_LENGTH) == -1) {
@@ -44,52 +44,13 @@ int main()
     buffer[BUFFER_LENGTH-1] = '\0';
     value = atoi(buffer);
     
-    if (value<400)
+    if (value < 4000)
     {
       // fprintf(68); ou fprintf(67)
-      printf("quad1: %d\n", value);
+      printf("LDR = %d\n", value);
       temp = value;
-    } else if (value<800)
-    {
-      printf("quad2: %d\n", value);
-      temp = value;
-    } else if (value<1200)
-    {
-      printf("quad3: %d\n", value);
-      temp = value;
-    } else if (value<1600)
-    {
-      printf("quad4: %d\n", value);
-      temp = value;
-    } else if (value<2000)
-    {
-      printf("quad5: %d\n", value);
-      temp = value;
-    } else if (value<2400)
-    {
-      printf("quad6: %d\n", value);
-      temp = value;
-    } else if (value<2800)
-    {
-      printf("quad7: %d\n", value);
-      temp = value;
-    } else if (value<3200)
-    {
-      printf("quad8: %d\n", value);
-      temp = value;
-    } else if (value<3600)
-    {
-      printf("quad9: %d\n", value);
-      temp = value;
-    } else if (value<4000)
-    {
-      printf("quad10: %d\n", value);
-      temp = value;
-    } else {
-      printf("quad11: %d\n", value);
-      temp = value;
-    } 
-    sleep(1);
+    }
+    sleep(0.5);
   }
     return 0;
 }

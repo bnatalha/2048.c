@@ -50,7 +50,7 @@ int main()
       printf("pushbutton = %d\n", value);
       temp = value;
     }
-    sleep(1);
+    sleep(0.5);
   }
     return 0;
 }
