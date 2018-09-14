@@ -2,9 +2,7 @@
 
 Implementar um joystick utilizando potenciometro, LDR e push button na BBB.
 
----
-
-TODO:
+##TO-DO
   + ler entradas
     + potenciometro
       + output: [0;4000]
