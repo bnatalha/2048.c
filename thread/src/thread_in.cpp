@@ -1,11 +1,22 @@
 #include "common_var.h"
-#include "tetris.h"
 #include "thread_in.h"
+#include "tetris.h"
 
 // ========================================================================================================
 // =========================================== extern global variables ====================================
 // ========================================================================================================
-char KEY_OUTPUT;
+std::mutex mtx;
+std::condition_variable can_play;
+std::condition_variable can_read;
+
+bool SHARED_PLAYING;
+
+bool SHARED_RUNNING;
+char SHARED_KEY_OUTPUT;
+
+// ========================================================================================================
+// ================================================== functions ===========================================
+// ========================================================================================================
 
 // joystick manipulation -------------------------------------------------------------------
 
@@ -61,7 +72,7 @@ std::string read_value(const char* filename){
   throw std::runtime_error("[read_value]: could not open file.");
 }
 
-// threads -------------------------------------------------------------------
+// aux -------------------------------------------------------------------
 
 void prepare_inputs(){
   INPUTS.push_back(pot);
@@ -84,6 +95,9 @@ void prepare_inputs(){
   }
 }
 
+
+// THREAD =========================================================================================
+
 void print_values(){
   for(bbb_input &bbb_in: INPUTS){
     std::cout << bbb_in.name << ": " << bbb_in.value << " ";
@@ -91,9 +105,12 @@ void print_values(){
   std::cout << std::endl;
 }
 
-void check_inputs(){  
-  int count = 40; // for testing
-  while(count > 0){ // change to event "playing"
+void check_inputs(){
+  while(SHARED_RUNNING){
+    // THREAD LOCK ===========================================
+    std::unique_lock<std::mutex> lck(mtx);
+    while(SHARED_PLAYING) can_read.wait(lck);
+    // =======================================================
 
     // read
     std::string temp_value;
@@ -116,41 +133,36 @@ void check_inputs(){
       // write new KEY value from new combination if necessary
       char new_KEY_OUTPUT = get_combination(
         INPUTS[in_name::PBUTTON].value, INPUTS[in_name::POTENCI].value, INPUTS[in_name::LDRESIS].value);
-      std::cout << "NEW_KEY: " << new_KEY_OUTPUT << std::endl;
-      if (KEY_OUTPUT != new_KEY_OUTPUT){
-        KEY_OUTPUT = new_KEY_OUTPUT;
-        write_value(JOYSTICK_PATH,KEY_OUTPUT);
+      //std::cout << "NEW_KEY: " << new_KEY_OUTPUT << std::endl;
+      if (SHARED_KEY_OUTPUT != new_KEY_OUTPUT){
+        SHARED_KEY_OUTPUT = new_KEY_OUTPUT;
+        //write_value(JOYSTICK_PATH,KEY_OUTPUT);
         //print new key
-        std::cout << "KEY: " << KEY_OUTPUT << std::endl;
+        //std::cout << "KEY: " << KEY_OUTPUT << std::endl;
       }
     }
-    std::this_thread::sleep_for (std::chrono::milliseconds(500));
-    
-    count--;
-    std::cout << count << std::endl;
+    //std::this_thread::sleep_for (std::chrono::milliseconds(500));
+
+    // THREAD UNLOCK ===========================================
+    SHARED_PLAYING = true;
+    can_play.notify_one();
+    // =======================================================
   } 
 }
 
 // main tests -------------------------------------------------------------------
 
-//test read and write
-void test00() {
-  std::string filepath = "/home/nat/Documents/bbb/t3_joystick/value";
-  std::string value;
-  try{
-    //write
-    write_value(filepath.c_str(), '1');
-    //read
-    value = read_value(filepath.c_str());
-    std::cout << value << std::endl;
-  }catch(std::exception &e){
-    std::cout << e.what() << std::endl;
-  }
-}
-
 int main() {
-  //prepare_inputs();
-  //check_inputs();
-  game();
+  prepare_inputs();
+  SHARED_PLAYING = true;
+
+  std::thread t1(check_inputs);
+  std::thread t2(game);
+  
+  t2.join();  // game ended
+
+  SHARED_PLAYING = false;
+  t1.join();
+  
   return 0;
 }

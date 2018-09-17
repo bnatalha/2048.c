@@ -3,7 +3,7 @@
  */
 
 #include "tetris.h"
-#include "common_variable.h"
+#include "common_var.h"
 
 void clear_screen() {
     printf("\033[2J");
@@ -359,42 +359,43 @@ tetris_piece_s get_current_piece(tetris_piece_s next_piece, int *playfield) {
  * ---------------------------------
  */
 char get_key(long delay) {
-    static char buf[16];
-    static int buf_len = 0;
-    static int buf_pos = 0;
+    //static char buf[16];
+    //static int buf_len = 0;
+    //static int buf_pos = 0;
     struct timeval t;
-    fd_set fs;
-    int JS;
-    JS = open("joystick", O_RDONLY);
+    //fd_set fs;
+    //int JS;
+    //JS = open("joystick", O_RDONLY);
 
-    if (buf_len > 0 && buf_pos < buf_len) {
+    //if (buf_len > 0 && buf_pos < buf_len) {
         //return 'd';
-        return buf[buf_pos++];
-    }
-    buf_len = 0;
-    buf_pos = 0;
+    //    return buf[buf_pos++];
+    //}
+    //buf_len = 0;
+    //buf_pos = 0;
     t.tv_sec = 0;
     t.tv_usec = 0;
     if (delay > 0) {
         t.tv_sec = delay / 1000000;
         t.tv_usec = delay % 1000000;
     }
-    FD_ZERO(&fs);
+    //FD_ZERO(&fs);
     //FD_SET(STDIN_FILENO, &fs);
-    FD_SET(JS, &fs);
+    //FD_SET(JS, &fs);
     //select(STDIN_FILENO + 1, &fs, 0, 0, &t);
-    select(JS + 1, &fs, 0, 0, &t);
+    //select(JS + 1, &fs, 0, 0, &t);
 
     //if (FD_ISSET(STDIN_FILENO, &fs)) {
-    if (FD_ISSET(JS, &fs)) {
+    //if (FD_ISSET(JS, &fs)) {
         //buf_len = read(STDIN_FILENO, buf, 16);
-        buf_len = read(JS, buf, 16);
-        if (buf_len > 0) {
+        //buf_len = read(JS, buf, 16);
+        //if (buf_len > 0) {
             //return 'd';
-            return buf[buf_pos++];
-        }
-    }
-    return 0;
+            //return buf[buf_pos++];
+        //}
+    //}
+    //return 0;
+    return SHARED_KEY_OUTPUT;
 }
 
 long get_current_micros() {
@@ -436,7 +437,14 @@ int game() {
     next_piece = get_next_piece(next_visible);
     redraw_screen(help_visible, next_piece, next_visible, current_piece, playfield);
     fflush(stdout);
-    while(1) {
+
+    // modified \begin ======================================================================
+    //while(1) {
+    while(SHARED_RUNNING) {
+        std::unique_lock<std::mutex> lck(mtx);
+        while(!SHARED_PLAYING) can_play.wait(lck);
+    // modified \end ======================================================================
+
         now = get_current_micros();
         c = get_key(last_down_time + tetris_delay - now);
         //c = get_js_key();
@@ -492,5 +500,9 @@ int game() {
                 break;
         }
         fflush(stdout);
+    // modified \begin ======================================================================
+    SHARED_PLAYING = false;
+    can_read.notify_one();
+    // modified \end ======================================================================
     }
 }

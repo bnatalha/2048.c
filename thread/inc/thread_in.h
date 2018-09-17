@@ -1,12 +1,9 @@
 #ifndef THREAD_HEADER
 #define THREAD_HEADER
 
-#include "common_variable.h"
-
 #include <string> // for string manipulation
 #include <iostream> // for terminal printing
 #include <fstream>  // for file operations
-#include <thread> // for threads
 #include <chrono> // for milliseconds
 #include <stdexcept>  // for exceptions
 #include <vector>  // for vector manipulation

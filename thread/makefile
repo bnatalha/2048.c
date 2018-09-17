@@ -1,7 +1,7 @@
 ##by @bnatalha
 
 CPPFLAGS += -pthread -std=c++11
-INC =-I include
+INC =-I inc
 
 .PHONY: all clean tetris
 
