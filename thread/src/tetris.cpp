@@ -5,11 +5,20 @@
 #include "tetris.h"
 #include "common_var.h"
 
+struct termios terminal_conf;
+int use_color = 1;
+long tetris_delay = DELAY * 1000000;
+
 void clear_screen() {
     printf("\033[2J");
 }
 
 void xyprint(int x, int y, char *s) {
+    printf("\033[%d;%dH%s", y, x, s);
+}
+
+//add
+void xyprint(int x, int y, const char *s) {
     printf("\033[%d;%dH%s", y, x, s);
 }
 

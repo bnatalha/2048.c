@@ -7,6 +7,7 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/time.h>
 
 #define ESC 27
 
@@ -47,10 +48,6 @@
 #define NEXT_EMPTY_CELL "  "
 #define PLAYFIELD_EMPTY_CELL " ."
 
-struct termios terminal_conf;
-int use_color = 1;
-long tetris_delay = DELAY * 1000000;
-
 typedef struct {
     int origin_x;
     int origin_y;
@@ -70,6 +67,9 @@ typedef struct {
 void clear_screen();
 
 void xyprint(int x, int y, char *s);
+
+//add
+void xyprint(int x, int y, const char *s);
 
 void show_cursor();
 

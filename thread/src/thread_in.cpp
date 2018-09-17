@@ -128,7 +128,7 @@ void check_inputs(){
     if(value_change){
       value_change = false; // reset
 
-      print_values();
+      //print_values();
 
       // write new KEY value from new combination if necessary
       char new_KEY_OUTPUT = get_combination(
@@ -155,6 +155,8 @@ void check_inputs(){
 int main() {
   prepare_inputs();
   SHARED_PLAYING = true;
+  SHARED_RUNNING = true;
+  SHARED_KEY_OUTPUT = 'a';
 
   std::thread t1(check_inputs);
   std::thread t2(game);
