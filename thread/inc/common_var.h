@@ -1,0 +1,8 @@
+#ifndef COMMON_VARIABLE_HEADER
+#define COMMON_VARIABLE_HEADER
+
+extern bool SHARED_RUNNING;
+
+extern char SHARED_KEY_OUTPUT;
+
+#endif
