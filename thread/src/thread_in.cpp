@@ -25,15 +25,15 @@ char get_combination(std::string &confirm,  std::string &axis,  std::string &dir
   if(confirm.compare("1") == 0){
     if(axis.compare("1") == 0){
       if(direction.compare("1") == 0)
-        return TOP_KEY;
-      else
-        return DOWN_KEY;
-    }
-    else{
-      if(direction.compare("1") == 0)
         return LEFT_KEY;
       else
         return RIGHT_KEY;
+    }
+    else{
+      if(direction.compare("1") == 0)
+        return QUIT_KEY;
+      else
+        return DOWN_KEY;
     }
   }
   return NO_KEY;
@@ -141,7 +141,7 @@ void check_inputs(){
         //std::cout << "KEY: " << KEY_OUTPUT << std::endl;
       }
     }
-    //std::this_thread::sleep_for (std::chrono::milliseconds(500));
+    std::this_thread::sleep_for (std::chrono::milliseconds(250));
 
     // THREAD UNLOCK ===========================================
     SHARED_PLAYING = true;

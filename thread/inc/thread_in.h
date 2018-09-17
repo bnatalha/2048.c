@@ -8,7 +8,7 @@
 #include <stdexcept>  // for exceptions
 #include <vector>  // for vector manipulation
 
-const char TOP_KEY = 'w';
+const char QUIT_KEY = 'q';
 const char DOWN_KEY = 's';
 const char LEFT_KEY = 'a';
 const char RIGHT_KEY = 'd';

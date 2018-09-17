@@ -481,7 +481,7 @@ int game() {
             case 's':
                 cmd_rotate(&current_piece, playfield);
                 break;
-            case 0:
+            case 'x':
                 last_down_time = get_current_micros();
                 if (!cmd_down(&current_piece, playfield)) {
                     current_piece = get_current_piece(next_piece, playfield);
